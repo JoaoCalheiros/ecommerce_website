@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Admin Register{% endblock %}
+{% block content %}
+{% include 'navbar_admin.html' %}
+
+<div class="text-center">
+    <h1>Register Admin</h1>
+</div>
+<div class="container">
+    {% from "_formhelpers.html" import render_field %}
+    <form method="post" enctype="multipart/form-data">
+        <div>
+            {{ render_field(form.email, class="form-control") }}
+            {{ render_field(form.username, class="form-control") }}
+            {{ render_field(form.password_hash, class="form-control") }}
+            {{ render_field(form.password_hash2, class="form-control") }}
+            {{ render_field(form.first_name, class="form-control") }}
+            {{ render_field(form.last_name, class="form-control") }}
+            {{ render_field(form.age, class="form-control") }}
+            {{ render_field(form.country, class="form-control") }}
+        </div>
+        <p><input type="submit" value="Register" class="btn btn-info"></p>
+    </form>
+</div>
+
+{% endblock %}
