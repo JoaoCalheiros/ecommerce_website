@@ -1,0 +1,17 @@
+pip install flask
+pip install flask-SQLAlchemy
+pip install flask-wtf
+pip install flask-uploads
+pip install -U Werkzeug==0.16.0
+pip install flask-login
+pip install flask-msearch
+pip install email_validator
+pip install flask-migrate
+pip install pdfkit 
+pip install numpy
+pip install pandas
+pip install matplotlib
+pip install dash
+pip install faker 
+pip install imagehash
+pip install password-strength
