@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}New Product{% endblock %}
+{% block content %}
+
+{% if session.permission == 'admin' %}    
+    {% include 'navbar_admin.html' %}
+{% elif session.permission == 'supplier' %}    
+    {% include 'navbar_supplier.html' %}
+{% endif %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <h1 class="text-center mt-5">Add a Product</h1>
+            {% from "_formhelpers.html" import render_field %}
+            <form action="" method="POST" enctype="multipart/form-data">
+                <label for="brand">Add a Brand</label>
+                <select name="brand" id="brand" class="form-control" required>
+                    <option value="">Select a Brand</option>
+                    {% for brand in brands %}
+                    <option value="{{brand.id}}">{{ brand.brand_name }}</option>
+                    {% endfor %}
+                </select>
+                <label for="category">Add a Category</label>
+                <select name="category" id="category" class="form-control" required>
+                    <option value="">Select a Category</option>
+                    {% for category in categories %}
+                    <option value="{{category.id}}">{{ category.category_name }}</option>
+                    {% endfor %}
+                </select>
+                {{ render_field(form.name, class="form-control") }}
+                {{ render_field(form.description, class="form-control") }}
+                {{ render_field(form.unit_price, class="form-control") }}
+                {{ render_field(form.unit_cost, class="form-control") }}
+                {{ render_field(form.unit_discount, class="form-control") }}
+                {{ render_field(form.inventory, class="form-control") }}
+                {{ render_field(form.colors, class="form-control") }}
+                {{ render_field(form.origin_country, class="form-control") }}
+                <div class="container">
+                    <div class="row">
+                        <!-- <input type="file" name="image" accept="static/*" class="form-control" required> -->
+                        <div class="col-md-4">{{ render_field(form.image, class="form-control") }}</div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-outline-info mt-4">Add Product</button>
+            </form>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</div>
+
+{% endblock content %}
