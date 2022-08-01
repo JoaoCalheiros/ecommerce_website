@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Suppliers List{% endblock %}
+{% block content %}
+{% include 'navbar_admin.html' %}
+
+<div class="container">
+    <table class="table table-sm">
+        <thead>
+            <th>ID</th>
+            <th>Logo</th>
+            <th>Company Name</th>
+            <th>Address</th>
+            <th>Zip Code</th>
+            <th>Email</th>
+            <th>Phone 1</th>
+            <th>Phone 2</th>
+            <th>Date Joined</th>
+        </thead>
+        <tbody>
+            {% for supplier in suppliers %}
+            {% set supplier_date = supplier.date_created|string %}
+            <tr>
+                <td>{{supplier.id}}</td>
+                <td><img src="{{ url_for('static', filename=supplier.logo) }}" alt="Logo" width="50" height="50"></td>
+                <td style="text-align: center;">{{supplier.name}}</td>
+                <td>{{supplier.address}}</td>
+                <td>{{supplier.zip_code}}</td>
+                <td>{{supplier.email}}</td>
+                <td>{{supplier.phone_contact_1}}</td>
+                <td>{{supplier.phone_contact_2}}</td>
+                <td>{{supplier_date[:10]}}</td>                
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}
