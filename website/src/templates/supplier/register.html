@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Supplier Register Page{% endblock %}
+{% block content %}
+{% include 'navbar_supplier.html' %}
+{% from "_formhelpers.html" import render_field %}
+
+<div class="container">
+    <div class="row" style="margin: auto;">
+        <h1 class="text-center">Register Supplier</h1>
+    </div>
+    <form action="" method="POST" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <div class="row">
+            <div>                
+                {{ render_field(form.name, class="form-control") }}
+                {{ render_field(form.address, class="form-control") }}
+                {{ render_field(form.zip_code, class="form-control") }}
+                {{ render_field(form.phone_contact_1, class="form-control") }}
+                {{ render_field(form.phone_contact_2, class="form-control") }}
+                {{ render_field(form.email, class="form-control") }}
+                {{ render_field(form.password, class="form-control") }}
+                {{ render_field(form.password_check, class="form-control") }}            
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div>{{ render_field(form.logo, class="form-control") }}</div>
+                </div>
+            </div>
+            {{ form.submit(class="btn btn-submit btn-success float-right") }}                               
+        </div>
+        <br>
+    </form>
+</div>
+
+{% endblock %}
