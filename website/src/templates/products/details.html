@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Product Details{% endblock %}
+{% block content %}
+
+
+<!-- Customized NAVBAR -->
+
+<div class=container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('products.store') }}">Store</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03"
+                aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarColor03">
+                <ul class="navbar-nav me-auto"> 
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('customer_route.customer_logout') }}" style="position:absolute; right:20%;">Logout</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('carts.personal_cart') }}" class="nav-link" tabindex="-1">Cart ({{session['ShoppingCart']|length}})</a>
+                    </li>
+                </ul>
+                <form class="d-flex">
+                    <input class="form-control me-sm-2" type="text" placeholder="Search">
+                    <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<!-- NAVBAR -->
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6" id="b_image">
+            <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" width="400" height="400">
+        </div>
+        <div class="col-md-6">
+            <h4 style="font-family: Arial, Helvetica, sans-serif;">{{ product.name }}</h4>
+            <h5 style="font-family: Arial, Helvetica, sans-serif;">From {{ product.company }}</h5>
+            <hr>
+            <p style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 15;">About:</p>
+            <p style="font-family: Arial, Helvetica, sans-serif; font-size: 15;">{{ product.description }}</p>
+            {% if product.unit_discount > 0 %}
+            {% set discount = ((product.unit_price * product.unit_discount) / 100) %}
+            {% set discount_price = product.unit_price - discount %}
+                <p style="font-size: 15px; font-family: Arial, Helvetica, sans-serif; font-weight: bold;">
+                    {{product.unit_discount}}% OFF! <br>
+                </p>
+                <span style="font-size: 15px; font-family: Arial, Helvetica, sans-serif;">Buy for only </span>
+                <span style="font-size: 15px; font-family: Arial, Helvetica, sans-serif; font-weight: bold;">{{ discount_price }} €</span>
+                <br>
+            {% else %}
+                <span style="font-size: 15px; font-family: Arial, Helvetica, sans-serif;">Buy for </span>
+                <span style="font-size: 15px; font-family: Arial, Helvetica, sans-serif; font-weight: bold;">{{ product.unit_price }} €</span>
+                <br>
+            {% endif %} 
+            <span style="font-size: 13px; font-family: Arial, Helvetica, sans-serif;">Made In: {{ product.origin_country }}</span>
+
+            <form action="{{ url_for('carts.add_to_cart') }}" method="POST">
+                <div style="text-align: center;">
+                    <hr>
+                    <!-- QUANTITY -->
+                    <label for="quantity">Quantity</label>
+                    <br>
+                    <input type="number" name="quantity" id="" value="1" min="1" max="{{ product.inventory }}">
+                    <br>
+                    <!-- COLORS OPTIONS -->
+                    {% set colors = product.colors.split(',') %}
+                    <label for="colors">Color</label>
+                    <br>
+                    <select name="colors" id="">
+                        {% for color in colors %}
+                        {% set col = color.split(':') %}
+                            <option value="{{ col[0] }}">{{ col[0] }}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <br>
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <button type="submit" class="btn btn-sm btn-warning">Add to Cart</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}
