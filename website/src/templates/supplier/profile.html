@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %} {{current_user.name}} Profile {% endblock %}
+{% block content %}
+{% include 'navbar_supplier.html' %}
+
+{% set supplier_date = update_pro.date_created|string %}
+<br>
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-4 card bg-light mb-3" style="max-width: 20rem;">
+			<div class="card-header">Company Profile</div>
+			<div class="card-body">
+			<span class="card-title">Name</span>
+			<p class="card-text">{{ current_user.name }}</p>
+			<span class="card-title">Address</span>
+			<p class="card-text">{{ current_user.address }}</p>
+			<span class="card-title">Zip Code</span>
+			<p class="card-text">{{ current_user.zip_code }}</p>
+			<span class="card-title">Contact</span>
+			<p class="card-text">{{ current_user.phone_contact_1 }}</p>
+			<span class="card-title">Contact (Secondary)</span>
+			<p class="card-text">{{ current_user.phone_contact_2 }}</p>
+			<span class="card-title">Email</span>
+			<p class="card-text">{{ current_user.email }}</p>
+			<span class="card-title">Date Joined</span>
+			<p class="card-text">{{ supplier_date[:10] }}</p>
+			<a href="{{ url_for('s_route.update_profile', id=current_user.id)}}">Update Profile</a>
+			</div>
+		</div>
+		<div class="col-4">
+			<img src="{{ url_for('static', filename=current_user.logo) }}" alt="Company Logo" width="500" height="500" >
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}
