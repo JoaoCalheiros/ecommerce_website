@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if session.permission == 'admin' %}    
+    {% include 'navbar_admin.html' %}
+{% elif session.permission == 'supplier' %}    
+    {% include 'navbar_supplier.html' %}
+{% else %}
+    {% include 'navbar.html' %}
+{% endif %}
+
+
+<div class="container">
+    <div class="row">
+        <!-- FILTER BY BRAND -->
+        {% if product_brand %}
+            {% for br in product_brand.items %}
+            {% set discount = ((br.unit_price * br.unit_discount) / 100) %}
+            {% set discount_price = br.unit_price - discount %}
+            <div class="col-md-3 mt-3">
+                <div class="card">
+                    <img src="{{ url_for('static', filename=br.image) }}" alt="{{ br.name }}" class="card-img-top" height="200">
+                    <div class="card-body" style="text-align: center;">
+                        <h5 style="font-size: 14px; font-style: italic; font-family: Arial, Helvetica, sans-serif;">
+                            From: {{ br.company }}
+                        </h5>
+                        <h5 style="font-size: 16px; font-family: Arial, Helvetica, sans-serif;">
+                            {{ br.name }}
+                        </h5>
+                        {% if br.unit_discount > 0 %}
+                            <span style="font-size: 15px; text-decoration-line: line-through; font-family: Arial, Helvetica, sans-serif; font-size: medium; margin: 10px;">
+                                {{ br.unit_price }} €   
+                            </span>
+                            <span style="font-size: 15px; font-family: Arial, Helvetica, sans-serif; font-size: medium;">{{ discount_price }} €</span>
+                        {% else %}
+                            <span style="font-size: 15px; font-family: Arial, Helvetica, sans-serif; font-size: medium;">
+                                {{ br.unit_price }} €
+                            </span>
+                        {% endif %}   
+                        <!--Only show the Details and Add to Cart buttons if the current user is logged in as CUSTOMER-->
+                        <!--Only CUSTOMERS can purchase products from the store-->
+                        {% if current_user.permission == 'customer'%}
+                        <div class="card-footer">
+                            <a href="{{ url_for('products.details_page', id=br.id) }}" class="float-left btn btn-sm btn-primary">Details</a>
+                            <form action="{{ url_for('carts.add_to_cart') }}" method="POST">
+                                <input type="hidden" name="product_id" value="{{ br.id }}">
+                                <button type="submit" class="btn btn-sm btn-warning float-right">Add to Cart</button>
+                                <!-- QUANTITY -->
+                                <input type="hidden" name="quantity" id="" value="1" min="1" max="{{ br.inventory }}">
+                                <!-- COLORS OPTIONS -->
+                                {% set colors = br.colors.split(',') %}
+                                <select name="colors" id="colors" style="visibility: hidden;">
+                                    {% for color in colors %}
+                                    {% set col = color.split(':') %}
+                                        <option value="{{ col[0] }}">{{ col[0] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div class="card-footer">
+                            <p style="font-size: 15px; font-family: Arial, Helvetica, sans-serif; font-size: medium;">Login as Customer to purchase products!</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+    </div>
+    <!-- PAGE NUMERATION | NEXT/PREVIOUS BUTTONS-->
+    <div class="row">
+        <div class="col text-center">
+            <!-- Display Previous button if there is a previous page to be displayed -->
+            {% if product_brand.has_prev %}
+            <a href="{{ url_for('products.show_selected_brand_products', id=product_brand_id.id, page=product_brand.prev_num) }}" class="btn btn-outline-info btn-sm mt-3">Previous</a>
+            {% endif %}
+            <!-- Display page numbers based no the amount of items there are available -->
+            {% for page_num in product_brand.iter_pages(left_edge=1, right_edge=2, left_current=1, right_current=2) %}
+                {% if page_num %}
+                <!-- Color the current page number button -->
+                    {% if product_brand.page == page_num %}
+                        <a href="{{ url_for('products.show_selected_brand_products', id=product_brand_id.id, page=page_num) }}" class="btn btn-info btn-sm mt-3">
+                            {{ page_num }}
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('products.show_selected_brand_products', id=product_brand_id.id, page=page_num) }}" class="btn btn-outline-info btn-sm mt-3">
+                            {{ page_num }}
+                        </a>
+                    {% endif %}                
+                {% else %}
+                ...
+                {% endif %}
+            {% endfor %}
+            <!-- Display Next button if there is a next page to be displayed -->
+            {% if product_brand.has_next %}
+            <a href="{{ url_for('products.show_selected_brand_products', id=product_brand_id.id, page=product_brand.next_num) }}" class="btn btn-outline-info btn-sm mt-3">Next</a>
+            {% endif %}
+        </div>
+    </div>
+    <br>
+    <!-- PAGE NUMERATION | NEXT/PREVIOUS BUTTONS-->
+    <div class="row">
+
+        <!-- FILTER BY CATEGORY -->
+        <!-- .items so I can define, in routes, how many items will be displayed, per page -->
+        {% elif product_category %}
+            {% for cat in product_category.items %}
+            {% set discount = ((cat.unit_price * cat.unit_discount) / 100) %}
+            {% set discount_price = cat.unit_price - discount %}
+
+            <div class="col-md-3 mt-3">
+                <div class="card">
+                    <img src="{{ url_for('static', filename=cat.image) }}" alt="{{ cat.name }}" class="card-img-top" height="200">
+                    <div class="card-body" style="text-align: center;">
+                        <h5 style="font-size: 14px; font-style: italic; font-family: Arial, Helvetica, sans-serif;">
+                            From: {{ cat.company }}
+                        </h5>
+                        <h5 style="font-size: 16px; font-family: Arial, Helvetica, sans-serif;">
+                            {{ cat.name }}
+                        </h5>
+                        {% if cat.unit_discount > 0 %}
+                            <span style="font-size: 15px; text-decoration-line: line-through; font-family: Arial, Helvetica, sans-serif; font-size: medium; margin: 10px;">
+                                {{ cat.unit_price }} €   
+                            </span>
+                            <span style="font-size: 15px; font-family: Arial, Helvetica, sans-serif; font-size: medium;">{{ discount_price }} €</span>
+                        {% else %}
+                            <span style="font-size: 15px; font-family: Arial, Helvetica, sans-serif; font-size: medium;">
+                                {{ cat.unit_price }} €
+                            </span>
+                        {% endif %}
+                        <!--Only show the Details and Add to Cart buttons if the current user is logged in as CUSTOMER-->
+                        <!--Only CUSTOMERS can purchase products from the store-->
+                        {% if current_user.permission == 'customer'%}
+                        <div class="card-footer">
+                            <a href="{{ url_for('products.details_page', id=cat.id) }}" class="float-left btn btn-sm btn-primary">Details</a>
+                            <form action="{{ url_for('carts.add_to_cart') }}" method="POST">
+                                <input type="hidden" name="product_id" value="{{ cat.id }}">
+                                <button type="submit" class="btn btn-sm btn-warning float-right">Add to Cart</button>
+                                <!-- QUANTITY -->
+                                <input type="hidden" name="quantity" id="" value="1" min="1" max="{{ cat.inventory }}">
+                                <!-- COLORS OPTIONS -->
+                                {% set colors = cat.colors.split(',') %}
+                                <select name="colors" id="colors" style="visibility: hidden;">
+                                    {% for color in colors %}
+                                    {% set col = color.split(':') %}
+                                        <option value="{{ col[0] }}">{{ col[0] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div class="card-footer">
+                            <p style="font-size: 15px; font-family: Arial, Helvetica, sans-serif; font-size: medium;">Login as Customer to purchase products!</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+    </div>
+    <!-- PAGE NUMERATION | NEXT/PREVIOUS BUTTONS-->
+    <div class="row">
+        <div class="col text-center">
+            <!-- Display Previous button if there is a previous page to be displayed -->
+            {% if product_category.has_prev %}
+            <a href="{{ url_for('products.show_selected_category_products', id=product_category_id.id, page=product_category.prev_num) }}" class="btn btn-outline-info btn-sm mt-3">Previous</a>
+            {% endif %}
+            <!-- Display page numbers based no the amount of items there are available -->
+            {% for page_num in product_category.iter_pages(left_edge=1, right_edge=2, left_current=1, right_current=2) %}
+                {% if page_num %}
+                <!-- Color the current page number button -->
+                    {% if product_category.page == page_num %}
+                        <a href="{{ url_for('products.show_selected_category_products', id=product_category_id.id, page=page_num) }}" class="btn btn-info btn-sm mt-3">
+                            {{ page_num }}
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('products.show_selected_category_products', id=product_category_id.id, page=page_num) }}" class="btn btn-outline-info btn-sm mt-3">
+                            {{ page_num }}
+                        </a>
+                    {% endif %}                
+                {% else %}
+                ...
+                {% endif %}
+            {% endfor %}
+            <!-- Display Next button if there is a next page to be displayed -->
+            {% if product_category.has_next %}
+            <a href="{{ url_for('products.show_selected_category_products', id=product_category_id.id, page=product_category.next_num) }}" class="btn btn-outline-info btn-sm mt-3">Next</a>
+            {% endif %}
+        </div>
+        <br>
+    </div>
+    <!-- PAGE NUMERATION | NEXT/PREVIOUS BUTTONS-->
+    <div class="row">
+        <!-- If there is no filter chosen by the user, show all products -->
+        {% else %}
+            <!-- .items so I can define, in routes, how many items will be displayed, per page -->
+            {% for product in products.items %}
+            {% set discount = ((product.unit_price * product.unit_discount) / 100) %}
+            {% set discount_price = product.unit_price - discount %}
+
+            <div class="col-md-3 mt-3">
+                <div class="card">
+                    <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" class="card-img-top" height="200">
+                    <div class="card-body" style="text-align: center;">                        
+                        <h5 style="font-size: 14px; font-style: italic; font-family: Arial, Helvetica, sans-serif;">
+                            From: {{ product.company }}
+                        </h5>
+                        <h5 style="font-size: 16px; font-family: Arial, Helvetica, sans-serif;">
+                            {{ product.name }}
+                        </h5>
+                        {% if product.unit_discount > 0 %}
+                            <span style="font-size: 15px; text-decoration-line: line-through; font-family: Arial, Helvetica, sans-serif; font-size: medium; margin: 10px;">
+                                {{ product.unit_price }} €   
+                            </span>
+                            <span style="font-size: 15px; font-family: Arial, Helvetica, sans-serif; font-size: medium;">{{ discount_price }} €</span>
+                        {% else %}
+                            <span style="font-size: 15px; font-family: Arial, Helvetica, sans-serif; font-size: medium;">
+                                {{ product.unit_price }} €
+                            </span>
+                        {% endif %}
+                        <!--Only show the Details and Add to Cart buttons if the current user is logged in as CUSTOMER-->
+                        <!--Only CUSTOMERS can purchase products from the store-->
+                        {% if current_user.permission == 'customer'%}
+                        <div class="card-footer">
+                            <a href="{{ url_for('products.details_page', id=product.id) }}"
+                               class="btn btn-sm btn-primary float-left"
+                               style="font-size: 15px; font-family: Arial, Helvetica, sans-serif;">
+                               Details
+                            </a>
+                            <form action="{{ url_for('carts.add_to_cart') }}" method="POST">
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <button type="submit"
+                                        class="btn btn-sm btn-warning float-right"
+                                        style="font-size: 15px; font-family: Arial, Helvetica, sans-serif;">
+                                        Add to Cart
+                                </button>
+                                <!-- QUANTITY -->
+                                <input type="hidden" name="quantity" id="" value="1" min="1" max="{{ product.inventory }}">
+                                <!-- COLORS OPTIONS -->
+                                <!--Set the first color in the colors list as the default color value when the customer clicks in the 'Add to Cart' button-->
+                                {% set colors = product.colors.split(',') %}
+                                <select name="colors" id="colors" style="visibility: hidden;">
+                                    {% for color in colors %}
+                                    {% set col = color.split(':') %}
+                                        <option value="{{ col[0] }}">{{ col[0] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div class="card-footer">
+                            <p style="font-size: 15px; font-family: Arial, Helvetica, sans-serif; font-size: medium;">Login as Customer to purchase products!</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+    </div>
+    <!-- PAGE NUMERATION | NEXT/PREVIOUS BUTTONS-->
+    <div class="row">
+        <div class="col text-center">
+            <!-- Display Previous button if there is a previous page to be displayed -->
+            {% if products.has_prev %}
+            <a href="{{ url_for('products.store', page=products.prev_num) }}" class="btn btn-outline-info btn-sm mt-3">Previous</a>
+            {% endif %}
+            <!-- Display page numbers based no the amount of items there are available -->
+            <!-- Edges define how many page numbers appear on the page -->
+            {% for page_num in products.iter_pages(left_edge=1, right_edge=2, left_current=1, right_current=2) %}
+                {% if page_num %}
+                <!-- Color the current page number button -->
+                    {% if products.page == page_num %}
+                        <a href="{{ url_for('products.store', page=page_num) }}" class="btn btn-info btn-sm mt-3">{{ page_num }}</a>
+                    {% else %}
+                        <a href="{{ url_for('products.store', page=page_num) }}" class="btn btn-outline-info btn-sm mt-3">{{ page_num }}</a>
+                    {% endif %}                
+                {% else %}
+                ...
+                {% endif %}
+            {% endfor %}
+            <!-- Display Next button if there is a next page to be displayed -->
+            {% if products.has_next %}
+            <a href="{{ url_for('products.store', page=products.next_num) }}" class="btn btn-outline-info btn-sm mt-3">Next</a>
+            {% endif %}
+        </div>
+    </div>
+    <br>
+    <!-- PAGE NUMERATION | NEXT/PREVIOUS BUTTONS-->
+        {% endif %}
+</div>
+
+{% endblock content %}
