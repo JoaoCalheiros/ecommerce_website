@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Edit Brands/Categories{% endblock %}
+{% block content %}
+{% include 'navbar_admin.html' %}
+
+<div class="container">
+    <table class="table table-sm">
+        <thead>
+            <th>Serial No.</th>
+            <th>Product</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </thead>
+        <tbody>
+            {% if brands %}
+            {% for brand in brands %}
+            <tr>
+                <td>{{brand.id}}</td>
+                <td>{{brand.brand_name}}</td>                
+                <td><a href="{{ url_for('admin_route.update_brand', id=brand.id) }}" class="btn btn-sm btn-outline-info">Edit</a></td>
+                <td>
+                  <!-- <a href="#" class="btn btn-sm btn-outline-danger">Delete</a> -->
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal-{{brand.id}}">
+                    Delete
+                  </button>
+                </td>
+            </tr>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal-{{brand.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">{{brand.brand_name}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <span class="text-danger">Are you sure you want to delete {{brand.brand_name}} ?</span>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ url_for('admin_route.delete_brand', id=brand.id) }}" method="POST">
+                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            {% else %}  
+            {% for category in categories %}
+            <tr>
+                <td>{{category.id}}</td>
+                <td>{{category.category_name}}</td>                
+                <td><a href="{{ url_for('admin_route.update_category', id=category.id) }}" class="btn btn-sm btn-outline-info">Edit</a></td>
+                <td>
+                  <!-- <a href="" class="btn btn-sm btn-outline-danger">Delete</a> -->
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal-{{category.id}}">
+                    Delete
+                  </button>
+                </td>
+            </tr>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal-{{category.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">{{category.category_name}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <span class="text-danger">Are you sure you want to delete {{category.category_name}} ?</span>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ url_for('admin_route.delete_category', id=category.id) }}" method="POST">
+                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}
