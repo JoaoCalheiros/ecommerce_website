@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Customer Register{% endblock %}
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="container">
+    {% from "_formhelpers.html" import render_field %}
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-9">
+            <h1 class="text-center">Register Customer</h1>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+    <form action="" method="POST">
+        {{ form.csrf_token }}
+        <div class="row">
+            <div class="col-md-2">                
+            </div>
+            <div class="col-md-4">                
+                {{ render_field(form.first_name, class="form-control") }}
+                {{ render_field(form.last_name, class="form-control") }}
+                {{ render_field(form.username, class="form-control") }}
+                {{ render_field(form.phone_contact, class="form-control") }}
+                {{ render_field(form.email, class="form-control") }}
+                {{ render_field(form.password, class="form-control") }}
+                {{ render_field(form.password_check, class="form-control") }}                
+            </div>
+            <div class="col-md-4">
+                {{ render_field(form.age, class="form-control") }}
+                {{ render_field(form.country, class="form-control") }}
+                {{ render_field(form.city, class="form-control") }}
+                {{ render_field(form.district, class="form-control") }}
+                {{ render_field(form.current_address, class="form-control") }}
+                {{ render_field(form.zip_code, class="form-control") }}
+                {{ form.profile_pic() }}
+                <hr><br>
+                {{ form.submit(class="btn btn-submit btn-success float-right") }}
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
