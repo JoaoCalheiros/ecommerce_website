@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Personal Cart{% endblock %}
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-sm">
+                <thead>
+                    <th>Sr. No.</th>
+                    <th>Image</th>
+                    <th class="text-center">Name</th>
+                    <th class="text-center">Price</th>
+                    <th class="text-center">Quantity</th>
+                    <th class="text-center">Discount</th>
+                    <th class="text-center">Price<br>(After Discount)</th>
+                    <th class="text-center">Color</th>
+                    <th class="text-center">Quality</th>
+                    <th class="text-center">Delivery<br>Company</th>
+                    <th class="text-center">Origin<br>Country</th>
+                    <th class="text-center">Update</th>
+                    <th class="text-center">Remove</th>
+                </thead>
+                <tbody>
+                    {% for key, product in session['ShoppingCart'].items() %}
+                    {% set discount_in_currency = '%0.2f'|format((product.unit_discount/100) * product.unit_price|float) %}
+                    {% set price_after_discount = product.quantity|int * product.unit_price|float %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td><img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" width="50" height="50"></td>
+                        <td class="text-center">{{ product.name }}</td>
+                                                                <!-- THIS key IS DEFINED ABOVE -->
+                        <form action="{{ url_for('carts.update_cart', id=key) }}" method="POST">
+                            <td class="text-center">{{ product.price }}</td>
+                            <td class="text-center"><input type="number" name="quantity" min="1" max="10" value="{{ product.quantity }}"></td>
+                            {% if product.unit_discount > 0 %}
+                            <td class="text-center">{{ product.unit_discount }}%</td>
+                            {% else %}
+                            <td class="text-center">No discount</td>
+                            {% endif %}
+                            <td class="text-center">{{ '%0.2f'|format((price_after_discount|float) - discount_in_currency|float) }}€</td>
+                            <td>
+                                {% set colors = product.colors.split(',') %}
+                                <select name="color" id="color">
+                                    <option value="{{ product.color }}" style="display: none;">{{ product.color|capitalize }}</option>
+                                    {% for color in colors %}
+                                    {% set col = color.split(':') %}
+                                        <option value="{{ col[0] }}">{{ col[0] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>{{ product.quality }}</td>
+                            <td>{{ product.origin_country }}</td>
+                            <td><button type="submit" class="btn btn-sm btn-info">Update</button></td>
+                        </form>
+
+                        <td><a class="btn btn-sm btn-danger" href="{{ url_for('carts.delete_cart_item', id=key) }}">Remove</a></td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="2"><h5>Tax (0.6%): {{ tax }} €</h5></td>
+                        <td colspan="5"><h5>Pay Total: {{ pay_total }} €</h5></td>
+                        <td colspan="2"><a href="{{ url_for('customer_route.get_order') }}" class="btn btn-success">Check Out</a></td>
+                        <td colspan="4"><a class="btn btn-sm btn-danger float-right" href="{{ url_for('carts.empty_cart') }}">Remove All</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}
